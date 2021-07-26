@@ -1,1 +1,1 @@
-web: gunicorn off-your-chest-blog:main --preload
+web: gunicorn main:app --preload
