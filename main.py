@@ -10,13 +10,16 @@ from forms import CreatePostForm, RegisterForm, LoginForm, CommentForm
 from flask_gravatar import Gravatar
 import email_validator
 from functools import wraps
+import os
 
 app = Flask(__name__, template_folder='templates')
-app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
+#app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
+app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
 ckeditor = CKEditor(app)
 Bootstrap(app)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 login_manager = LoginManager()
@@ -30,6 +33,7 @@ gravatar = Gravatar(app,
                     force_lower=False,
                     use_ssl=False,
                     base_url=None)
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -65,10 +69,10 @@ class Comment(db.Model):
     __tablename__ = "comment"
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.Text, nullable=False)
-# --------------------------------------------------User ----> Comment(s) relationship ------------------------------- #
+    # --------------------------------------------------User ----> Comment(s) relationship ------------------------------- #
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))  # will attach to the user that makes a new comment.
     comment_author = relationship("User", back_populates="comments")
-# ----------------------------------------------BlogPost ----> Comment(s) relationship ------------------------------- #
+    # ----------------------------------------------BlogPost ----> Comment(s) relationship ------------------------------- #
     post_id = db.Column(db.Integer, db.ForeignKey("blog_posts.id"))
     post = relationship("BlogPost", back_populates="comments")
 
